@@ -1,0 +1,14 @@
+module lsfr #(WIDTH = 8 : WIDTH > 0)(
+    input clk,  // clock
+    input rst,  // reset
+    input en,   // enable
+    output out[WIDTH]
+) {
+    dff reg[WIDTH](.clk(clk), .rst(rst))
+    always {
+        if (en) {
+            reg.d = c{reg.q[WIDTH-2:0], ~(((reg.q[WIDTH-1] ^ reg.q[WIDTH-3]) ^ reg.q[WIDTH-4]) ^ reg.q[WIDTH-6])}
+        }
+        out = reg.q
+    }
+}

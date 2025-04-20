@@ -1,0 +1,23 @@
+module lsfr_delay #(WIDTH = 8 : WIDTH > 5)(
+    input clk,  // clock
+    input rst,  // reset
+    input hold, // hold reg values
+    output out[WIDTH]
+) {
+    dff reg[WIDTH](.clk(clk), .rst(rst))
+    
+    dff delay[$is_sim() ? 8 : 25](.clk(clk), .rst(rst))
+    always {
+        out = reg.q     
+        if (!hold) {
+            delay.d = delay.q + 1        
+            if (delay.q[$is_sim() ? 7 : 24]) {
+                //reg.d[WIDTH-1:1] = reg.q[WIDTH-2:0]
+                //reg.d[0] = ~(((reg.q[WIDTH-1] ^ reg.q[WIDTH-3]) ^ reg.q[WIDTH-4]) ^ reg.q[WIDTH-6])
+                reg.d = c{reg.q[WIDTH-2:0], ~(((reg.q[WIDTH-1] ^ reg.q[WIDTH-3]) ^ reg.q[WIDTH-4]) ^ reg.q[WIDTH-6])}
+                //reg.d = c{reg.q[WIDTH-2:0], ~(reg.q[WIDTH-1] ^ reg.q[WIDTH-2])}
+                delay.d = 0
+            }     
+        }           
+    }
+}
